@@ -52,3 +52,36 @@ func SelectOneProduct(db *sql.DB, id string) (*entities.Product, error) {
 	fmt.Printf("Product: %v, possui o preço de R$ %.2f", p.Name, p.Price)
 	return &p, nil
 }
+
+// retorna um slice dos produtos (slice é como se fosse um array)
+func SelecAllProducts(db *sql.DB) ([]entities.Product, error) {
+	rows, err := db.Query("SELECT ID, Name, Price FROM Product")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var products []entities.Product
+	// faço uma lista de product e depois jogo eles no meu slice, como se fosse um array.push
+	for rows.Next() {
+		var p entities.Product
+		err = rows.Scan(&p.ID, &p.Name, &p.Price)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+	return products, nil
+}
+func DeleteProduct(db *sql.DB, id string) error {
+	stmt, err := db.Prepare("DELETE FROM Product WHERE ID = ?")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return err
+	}
+	fmt.Println("------ PRODUTO DELETADO COM SUCESSO --------")
+	return nil
+}

@@ -24,9 +24,12 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	_, err = service.SelectOneProduct(db, product.ID)
+	products, err := service.SelecAllProducts(db)
 	if err != nil {
 		panic(err)
 	}
-
+	for _, p := range products {
+		fmt.Printf("Produto: %s - Preço: %.2f\n", p.Name, p.Price)
+	}
+	err = service.DeleteProduct(db, product.ID)
 }
